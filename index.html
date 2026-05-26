@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Morphogenesis Engine</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="canvas-container"></div>
+
+  <!-- ── Main HUD ────────────────────────────────────────────── -->
+  <div id="hud">
+    <div id="hud-header">
+      <div>
+        <div id="hud-title">MORPHOGENESIS ENGINE</div>
+        <div id="hud-subtitle">Turing Reaction-Diffusion · BMP / Noggin</div>
+      </div>
+      <!-- Info button — toggles the info panel -->
+      <button id="info-btn" title="What is this?">?</button>
+    </div>
+
+    <div class="hud-divider"></div>
+    <div id="hud-counts">BMP: — &nbsp; NOGGIN: —</div>
+    <div id="hud-mode">MODE: SPOT</div>
+    <div id="pop-bar-wrap">
+      <div id="pop-bar-bmp"></div>
+      <div id="pop-bar-nog"></div>
+    </div>
+
+    <div class="hud-divider"></div>
+    <div class="hud-section-label">SPAWN</div>
+    <div class="hud-row"><kbd>L-CLICK</kbd><span>inject BMP activators</span></div>
+    <div class="hud-row"><kbd>R-CLICK</kbd><span>inject Noggin inhibitors</span></div>
+    <div class="hud-row"><kbd>DRAG</kbd><span>push nearby bodies</span></div>
+
+    <div class="hud-divider"></div>
+    <div class="hud-section-label">CONTROLS</div>
+    <div class="hud-row"><kbd>T</kbd><span>spot ↔ stripe mode</span></div>
+    <div class="hud-row"><kbd>V</kbd><span>vector field overlay</span></div>
+    <div class="hud-row"><kbd>E</kbd><span>energy bars overlay</span></div>
+    <div class="hud-row"><kbd>R</kbd><span>replay same seed</span></div>
+    <div class="hud-row"><kbd>N</kbd><span>new random seed</span></div>
+  </div>
+
+  <!-- ── Science annotation bar ─────────────────────────────── -->
+  <div id="science-bar">
+    <span id="science-text">BMP self-excites locally · Noggin suppresses at long range · tension → evenly-spaced spots</span>
+  </div>
+
+  <!-- ── Info panel (hidden by default) ────────────────────── -->
+  <div id="info-overlay" class="hidden">
+    <div id="info-panel">
+      <div id="info-panel-header">
+        <span id="info-panel-title">THE SCIENCE</span>
+        <button id="info-close-btn">✕</button>
+      </div>
+
+      <div class="info-section">
+        <div class="info-section-title">🧬 What is Turing Morphogenesis?</div>
+        <p>In 1952, mathematician Alan Turing published a paper called <em>"The Chemical Basis of Morphogenesis"</em> — showing mathematically that two simple chemicals, reacting and diffusing through tissue, can spontaneously produce complex patterns like spots and stripes. No blueprint required. The pattern emerges on its own.</p>
+      </div>
+
+      <div class="info-section">
+        <div class="info-section-title">🟡 BMP — the Activator</div>
+        <p>BMP (Bone Morphogenetic Protein) is the gold particle. It does two things: it excites itself (nearby BMP attracts more BMP) and it triggers the production of Noggin. Think of it as a signal that says <em>"pattern here."</em></p>
+        <div class="info-rule">
+          Short range → <span class="tag gold">attracts</span> other BMP → clusters form<br>
+          Long range → <span class="tag gold">repels</span> other BMP → clusters space apart
+        </div>
+      </div>
+
+      <div class="info-section">
+        <div class="info-section-title">🔵 Noggin — the Inhibitor</div>
+        <p>Noggin is the cyan particle. It diffuses faster than BMP (lighter, moves quicker) and suppresses BMP wherever it reaches. It fills the gaps between BMP clusters, preventing new spots from forming there.</p>
+        <div class="info-rule">
+          Always <span class="tag teal">repels</span> other Noggin → spreads into gaps<br>
+          Slowly <span class="tag teal">drifts toward</span> BMP → contains each blob
+        </div>
+      </div>
+
+      <div class="info-section">
+        <div class="info-section-title">⚡ The Turing Instability</div>
+        <p>The magic happens because of a speed difference. Noggin diffuses faster than BMP. So BMP can locally excite itself before Noggin arrives to suppress it — but Noggin then spreads out and suppresses BMP everywhere else. The result: stable evenly-spaced spots, with suppressed gaps between them.</p>
+        <p style="margin-top:8px">This is called a <strong>Turing Instability</strong> — a uniform distribution is unstable, and tiny random fluctuations amplify into a stable pattern.</p>
+      </div>
+
+      <div class="info-section">
+        <div class="info-section-title">🐆 Real-world examples</div>
+        <div class="info-examples">
+          <div class="info-example"><span class="ex-icon">🐆</span><div><strong>Leopard spots</strong><br><small>BMP/Noggin patterns in skin pigment cells during embryo development</small></div></div>
+          <div class="info-example"><span class="ex-icon">🦓</span><div><strong>Zebra stripes</strong><br><small>Same equations, different parameter ratio → stripes instead of spots (press T!)</small></div></div>
+          <div class="info-example"><span class="ex-icon">🖐</span><div><strong>Your 5 fingers</strong><br><small>BMP and Noggin space out digit condensations in the embryonic limb bud</small></div></div>
+          <div class="info-example"><span class="ex-icon">🐟</span><div><strong>Zebrafish stripes</strong><br><small>Directly observed Turing patterns in living pigment cells</small></div></div>
+        </div>
+      </div>
+
+      <div class="info-section">
+        <div class="info-section-title">🗺 The environment zones</div>
+        <div class="info-rule gold-rule">
+          <strong>BMP Organiser</strong> (amber ring, top-right)<br>
+          Mimics the Zone of Polarising Activity in a developing limb bud. BMP inside gets pulled toward the centre — a region of strong autocatalytic signal that seeds patterning.
+        </div>
+        <div class="info-rule teal-rule" style="margin-top:8px">
+          <strong>Noggin Suppressor</strong> (teal ring, bottom-left)<br>
+          Mimics a Noggin-rich tissue domain (e.g. dorsal ectoderm). All bodies inside slow down — high Noggin concentration suppresses BMP diffusion and dampens pattern formation.
+        </div>
+      </div>
+
+      <div class="info-section">
+        <div class="info-section-title">📊 The overlays</div>
+        <div class="info-rule">
+          <strong>V — Vector field:</strong> arrows showing where BMP attraction is pulling at each point in space. Arrows point toward nearby BMP clusters — you're seeing the invisible force landscape.<br><br>
+          <strong>E — Energy bars:</strong> green = slow/calm particle, red = fast/high-energy particle. You can see which bodies are being pushed hard by forces right now.
+        </div>
+      </div>
+
+      <div class="info-section">
+        <div class="info-section-title">🔁 Spot vs Stripe mode (press T)</div>
+        <p>In spot mode, BMP attracts itself at short range → discrete blobs. In stripe mode, BMP repels at <em>all</em> distances → filaments. Turing proved both emerge from the same equations — only the diffusion ratio changes. Real animals are "locked in" at birth, but you can switch live here.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <script src="sketch.js"></script>
+  <script>
+    // Info panel toggle — pure JS, no p5 involvement
+    const infoBtn     = document.getElementById('info-btn');
+    const infoOverlay = document.getElementById('info-overlay');
+    const infoClose   = document.getElementById('info-close-btn');
+
+    infoBtn.addEventListener('click', () => {
+      infoOverlay.classList.toggle('hidden');
+      // Prevent canvas mouse events bleeding through while panel is open
+      infoOverlay.classList.contains('hidden')
+        ? infoOverlay.style.pointerEvents = 'none'
+        : infoOverlay.style.pointerEvents = 'all';
+    });
+
+    infoClose.addEventListener('click', () => {
+      infoOverlay.classList.add('hidden');
+      infoOverlay.style.pointerEvents = 'none';
+    });
+
+    // Click backdrop to close
+    infoOverlay.addEventListener('click', (e) => {
+      if (e.target === infoOverlay) {
+        infoOverlay.classList.add('hidden');
+        infoOverlay.style.pointerEvents = 'none';
+      }
+    });
+  </script>
+</body>
+</html>
